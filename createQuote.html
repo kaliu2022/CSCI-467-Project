@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Quote | Quote System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-content">
+            <h1>Quote System</h1>
+            <nav aria-label="Main navigation">
+                <a href="createQuote.html">Create Quote</a>
+                <button id="logout-button" class="link-button" type="button">Log Out</button>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page-shell">
+        <section class="card" aria-labelledby="create-quote-title">
+            <h1 id="create-quote-title">Create Quote</h1>
+
+            <div id="associate-banner" class="associate-banner"></div>
+            <div id="message" class="message" role="alert" aria-live="polite"></div>
+
+            <form id="quote-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="customer_id">Customer ID</label>
+                        <input
+                            type="number"
+                            id="customer_id"
+                            name="customer_id"
+                            min="1"
+                            required
+                        >
+                        <p class="help-text">The customer must already exist in the legacy database.</p>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="secret_notes">Secret Notes</label>
+                        <textarea
+                            id="secret_notes"
+                            name="secret_notes"
+                            rows="4"
+                            maxlength="2000"
+                            placeholder="Notes for internal staff only"
+                        ></textarea>
+                    </div>
+                </div>
+
+                <div class="section-heading">
+                    <h2>Line Items</h2>
+                    <button id="add-item-button" class="button button-secondary" type="button">
+                        Add Line Item
+                    </button>
+                </div>
+
+                <div id="line-items" class="line-items"></div>
+
+                <div class="actions">
+                    <button class="button button-secondary" type="reset">Clear Form</button>
+                    <button id="save-button" class="button button-primary" type="submit">
+                        Save Draft Quote
+                    </button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <template id="line-item-template">
+        <div class="line-item">
+            <div class="form-group">
+                <label>Item ID</label>
+                <input class="item-id" type="number" min="1" required>
+            </div>
+
+            <div class="form-group">
+                <label>Price</label>
+                <input class="item-price" type="number" min="0" step="0.01" placeholder="Catalog price if blank">
+            </div>
+
+            <div class="form-group">
+                <label>Quantity</label>
+                <input class="item-quantity" type="number" min="1" value="1" required>
+            </div>
+
+            <button class="button button-danger remove-item-button" type="button">
+                Remove
+            </button>
+        </div>
+    </template>
+
+    <script src="createQuote.js"></script>
+</body>
+</html>
