@@ -6,11 +6,11 @@ error_reporting(E_ALL);
 require 'db.php';
 
 // All filters are optional and will only be used if they are given in the GET request
-$status = $_GET['status'] ?? null;
-$associate_id = $_GET['associate_id'] ?? null;
-$customer_id = $_GET['customer_id'] ?? null;
-$date_from = $_GET['date_from'] ?? null;
-$date_to = $_GET['date_to'] ?? null;
+$status = $_GET['Status'] ?? null;
+$associate_id = $_GET['SalesAssociate'] ?? null;
+$customer_id = $_GET['Customer'] ?? null;
+$date_from = $_GET['Earliest'] ?? null;
+$date_to = $_GET['Latest'] ?? null;
 
 $conditions = [];
 $params = [];
