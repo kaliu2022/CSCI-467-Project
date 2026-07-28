@@ -237,6 +237,45 @@ select:focus {
     margin-top: 24px;
 }
 
+.index-list {
+    list-style: none;
+    margin: 8px 0 0;
+    padding: 0;
+    display: none;
+}
+
+.index-list.show {
+    display: block;
+}
+
+.index-list li {
+    padding: 8px 10px;
+    background: #eaf4ff;
+    border: 1px solid #b6d7ff;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.index-list.error li {
+    background: #fff5f5;
+    border-color: #e66a6a;
+    color: #8a1c1c;
+}
+
+.item-id-group {
+    position: relative;
+}
+
+.item-index {
+    position: absolute;
+    bottom: 0;
+    left: calc(100% + 12px);
+    margin: 0;
+    min-width: 180px;
+    max-width: 260px;
+    z-index: 5;
+}
+
 .associate-banner {
     margin-bottom: 18px;
     padding: 12px 14px;

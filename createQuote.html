@@ -36,6 +36,7 @@
                             required
                         >
                         <p class="help-text">The customer must already exist in the legacy database.</p>
+                        <ul id="customer-index" class="index-list"></ul>
                     </div>
 
                     <div class="form-group full-width">
@@ -71,9 +72,10 @@
 
     <template id="line-item-template">
         <div class="line-item">
-            <div class="form-group">
+            <div class="form-group item-id-group">
                 <label>Item ID</label>
                 <input class="item-id" type="number" min="1" required>
+                <ul class="index-list item-index"></ul>
             </div>
 
             <div class="form-group">

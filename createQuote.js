@@ -6,6 +6,8 @@ const saveButton = document.getElementById('save-button');
 const logoutButton = document.getElementById('logout-button');
 const messageBox = document.getElementById('message');
 const associateBanner = document.getElementById('associate-banner');
+const customerIndex = document.getElementById('customer-index');
+const customerIdInput = document.getElementById('customer_id');
 
 const storedAssociate = localStorage.getItem('salesAssociate');
 let associate = null;
@@ -33,10 +35,99 @@ function clearMessage() {
     messageBox.className = 'message';
 }
 
+function debounce(fn, delay) {
+    let timeoutId;
+    return (...args) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => fn(...args), delay);
+    };
+}
+
+function showIndexError(listElement, text) {
+    listElement.innerHTML = `<li>${text}</li>`;
+    listElement.className = 'index-list show error';
+}
+
+function hideIndex(listElement) {
+    listElement.innerHTML = '';
+    listElement.className = 'index-list';
+}
+
+async function lookupCustomer(customerId, listElement) {
+    if (!Number.isInteger(customerId) || customerId < 1) {
+        hideIndex(listElement);
+        return;
+    }
+
+    try {
+        const response = await fetch(`getCustomer.php?id=${customerId}`);
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            showIndexError(listElement, result.errors?.join(' ') || 'Customer not found.');
+            return;
+        }
+
+        const customer = result.customer;
+        listElement.innerHTML = `
+            <li>Name: ${customer.name}</li>
+            <li>City: ${customer.city}</li>
+            <li>Street: ${customer.street}</li>
+        `;
+        listElement.className = 'index-list show';
+    } catch (error) {
+        showIndexError(listElement, 'Unable to look up customer.');
+    }
+}
+
+async function lookupItem(itemId, listElement) {
+    if (!Number.isInteger(itemId) || itemId < 1) {
+        hideIndex(listElement);
+        return;
+    }
+
+    try {
+        const response = await fetch(`getItem.php?id=${itemId}`);
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            showIndexError(listElement, result.errors?.join(' ') || 'Item not found.');
+            return;
+        }
+
+        const item = result.item;
+        listElement.innerHTML = `
+            <li>Description: ${item.description}</li>
+            <li>Price: $${Number(item.price).toFixed(2)}</li>
+        `;
+        listElement.className = 'index-list show';
+    } catch (error) {
+        showIndexError(listElement, 'Unable to look up item.');
+    }
+}
+
+const debouncedCustomerLookup = debounce((value, listElement) => {
+    lookupCustomer(Number(value), listElement);
+}, 400);
+
+customerIdInput.addEventListener('input', () => {
+    debouncedCustomerLookup(customerIdInput.value, customerIndex);
+});
+
 function addLineItem() {
     const fragment = lineItemTemplate.content.cloneNode(true);
     const row = fragment.querySelector('.line-item');
     const removeButton = fragment.querySelector('.remove-item-button');
+    const itemIdInput = fragment.querySelector('.item-id');
+    const itemIndex = fragment.querySelector('.item-index');
+
+    const debouncedItemLookup = debounce((value) => {
+        lookupItem(Number(value), itemIndex);
+    }, 400);
+
+    itemIdInput.addEventListener('input', () => {
+        debouncedItemLookup(itemIdInput.value);
+    });
 
     removeButton.addEventListener('click', () => {
         if (lineItemsContainer.children.length === 1) {
@@ -60,6 +151,7 @@ quoteForm.addEventListener('reset', () => {
     setTimeout(() => {
         lineItemsContainer.innerHTML = '';
         addLineItem();
+        hideIndex(customerIndex);
         clearMessage();
     }, 0);
 });
