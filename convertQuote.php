@@ -1,4 +1,6 @@
 <?php
+// Convert Quote endpoint: turns a sanctioned quote into a purchase
+// the PO number/commission and marks the quote 'ordered'.
 require 'json_api.php';
 
 $data = json_decode(file_get_contents('php://input'), true);

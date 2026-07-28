@@ -1,4 +1,6 @@
 <?php
+// Edit Quote endpoint: recalculates the final amount from discount +
+// line items, then saves discount/notes/status for the given quote.
 require 'json_api.php';
 
 $data = json_decode(file_get_contents('php://input'), true);

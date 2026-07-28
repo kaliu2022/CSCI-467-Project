@@ -1,3 +1,5 @@
+// Process Orders: load a quote by ID and convert it to a purchase
+// order once it's sanctioned; shows the resulting PO details.
 const convertQuoteForm = document.getElementById('convert-quote-form');
 const convertHelp = document.getElementById('convert-help');
 const finalDiscountValueInput = document.getElementById('final_discount_value');

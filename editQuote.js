@@ -1,3 +1,5 @@
+// Edit Quote: load a quote by ID, edit its discount and notes, and
+// sanction it (Save always sets status to 'sanctioned').
 const editQuoteForm = document.getElementById('edit-quote-form');
 const discountTypeSelect = document.getElementById('discount_type');
 const discountValueInput = document.getElementById('discount_value');
