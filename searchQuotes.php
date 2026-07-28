@@ -81,7 +81,7 @@ $quotes = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
     echo '<h1>Quotes</h1>';
     echo '<h3>Search</h3>';
-    echo '<form method="GET" action="admin.php">';
+    echo '<form method="GET">';
     
     $result = $conn->query("SELECT DISTINCT customer_id FROM quotes ORDER BY customer_id ASC");
     $rows = $result->fetch_all(MYSQLI_BOTH);
