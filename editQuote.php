@@ -1,9 +1,5 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
-header('Content-Type: application/json');
-require 'db.php';
+require 'json_api.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 $quote_id = $data['quote_id'] ?? null;
@@ -18,17 +14,7 @@ if (!$quote_id) {
     exit;
 }
 
-$stmt = $conn->prepare('SELECT * FROM quotes WHERE quote_id = ?');
-$stmt->bind_param('i', $quote_id);
-$stmt->execute();
-$quoteResult = $stmt->get_result();
-
-if ($quoteResult->num_rows === 0) {
-    http_response_code(404);
-    echo json_encode(['errors' => ['Quote not found']]);
-    exit;
-}
-$quote = $quoteResult->fetch_assoc();
+$quote = getQuoteOrFail($conn, $quote_id);
 
 $stmt = $conn->prepare('SELECT * FROM quote_line_items WHERE quote_id = ?');
 $stmt->bind_param('i', $quote_id);

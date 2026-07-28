@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Process Orders | Quote System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-content">
+            <h1>Quote System</h1>
+            <nav aria-label="Main navigation">
+                <button id="logout-button" class="link-button" type="button">Log Out</button>
+            </nav>
+        </div>
+    </header>
+    <script src="nav.js"></script>
+
+    <main class="page-shell">
+        <section class="card" aria-labelledby="convert-quote-title">
+            <h1 id="convert-quote-title">Process Orders</h1>
+
+            <div id="associate-banner" class="associate-banner"></div>
+            <div id="message" class="message" role="alert" aria-live="polite"></div>
+
+            <form id="load-quote-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="lookup_quote_id">Quote ID</label>
+                        <input
+                            type="number"
+                            id="lookup_quote_id"
+                            name="lookup_quote_id"
+                            min="1"
+                            required
+                        >
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button id="load-button" class="button button-primary" type="submit">
+                        Load Quote
+                    </button>
+                </div>
+            </form>
+
+            <div id="quote-details" class="quote-details" hidden>
+                <div class="section-heading">
+                    <h2>Quote Details</h2>
+                </div>
+
+                <dl class="detail-grid">
+                    <div><dt>Quote ID</dt><dd id="detail-quote-id"></dd></div>
+                    <div><dt>Customer ID</dt><dd id="detail-customer-id"></dd></div>
+                    <div><dt>Associate</dt><dd id="detail-associate-id"></dd></div>
+                    <div><dt>Customer Email</dt><dd id="detail-customer-email"></dd></div>
+                    <div><dt>Created</dt><dd id="detail-created-date"></dd></div>
+                    <div><dt>Status</dt><dd id="detail-status"></dd></div>
+                    <div><dt>Final Amount</dt><dd id="detail-final-amount"></dd></div>
+                    <div><dt>PO Number</dt><dd id="detail-po-number"></dd></div>
+                </dl>
+
+                <div class="section-heading">
+                    <h2>Line Items</h2>
+                </div>
+                <ul id="detail-line-items" class="readonly-line-items"></ul>
+
+                <form id="convert-quote-form">
+                    <div class="section-heading">
+                        <h2>Convert to Purchase Order</h2>
+                    </div>
+
+                    <p id="convert-help" class="help-text">Converting to a purchase order requires the sanctioned status.</p>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="final_discount_value">Additional Discount</label>
+                            <input type="number" id="final_discount_value" name="final_discount_value" min="0" step="0.01" value="0">
+                            <p class="help-text">Applied on top of the final amount at conversion time.</p>
+                        </div>
+                    </div>
+
+                    <div class="actions">
+                        <button id="convert-button" class="button button-primary" type="submit">
+                            Convert to Purchase Order
+                        </button>
+                    </div>
+                </form>
+
+                <div id="po-result" class="po-result" hidden>
+                    <div class="section-heading">
+                        <h2>Purchase Order</h2>
+                    </div>
+                    <dl class="detail-grid">
+                        <div><dt>PO Number</dt><dd id="po-number"></dd></div>
+                        <div><dt>Processing Date</dt><dd id="po-processing-date"></dd></div>
+                        <div><dt>Commission Rate</dt><dd id="po-commission-rate"></dd></div>
+                        <div><dt>Commission Amount</dt><dd id="po-commission-amount"></dd></div>
+                        <div><dt>Order Amount</dt><dd id="po-order-amount"></dd></div>
+                    </dl>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script src="common.js"></script>
+    <script src="quoteDetails.js"></script>
+    <script src="convertQuote.js"></script>
+</body>
+</html>

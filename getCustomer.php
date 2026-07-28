@@ -1,9 +1,5 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
-header('Content-Type: application/json');
-require 'db.php';
+require 'json_api.php';
 
 $customer_id = $_GET['id'] ?? null;
 

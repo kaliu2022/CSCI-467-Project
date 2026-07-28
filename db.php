@@ -1,8 +1,8 @@
 <?php
-$host = 'courses';
-$user = 'z*******'; //z-id
-$password = 'YYYYMmmdd'; //date of birth
-$database = 'z*******'; //z-id
+$host = 'localhost';
+$user = 'root';
+$password = '';
+$database = 'csci_467';
 
 $conn = new mysqli($host, $user, $password, $database);
 
