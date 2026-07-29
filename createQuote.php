@@ -1,15 +1,20 @@
 <?php
-require 'json_api.php';
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+
+header('Content-Type: application/json');
+require 'db.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 $customer_id = $data['customer_id'] ?? null;
+$customer_email = trim($data['customer_email'] ?? '');
 $associate_id = $data['associate_id'] ?? null;
 $secret_notes = $data['secret_notes'] ?? null;
 $line_items = $data['line_items'] ?? null;
 
-if (!$customer_id || !$associate_id || !is_array($line_items) || count($line_items) === 0) {
+if (!$customer_id || $customer_email === '' || !$associate_id || !is_array($line_items) || count($line_items) === 0) {
     http_response_code(400);
-    echo json_encode(['errors' => ['customer_id, associate_id, and at least one line item are required']]);
+    echo json_encode(['errors' => ['customer_id, customer_email, associate_id, and at least one line item are required']]);
     exit;
 }
 
@@ -27,9 +32,9 @@ if ($customerResult->num_rows === 0) {
 $customer = $customerResult->fetch_assoc();
 
 // Create the quote
-$status = 'draft';
+$status = 'finalized';
 $stmt = $conn->prepare('INSERT INTO quotes (customer_id, associate_id, status, secret_notes, customer_email) VALUES (?, ?, ?, ?, ?)');
-$stmt->bind_param('issss', $customer_id, $associate_id, $status, $secret_notes, $customer['contact']);
+$stmt->bind_param('issss', $customer_id, $associate_id, $status, $secret_notes, $customer_email);
 $stmt->execute();
 $quote_id = $conn->insert_id;
 

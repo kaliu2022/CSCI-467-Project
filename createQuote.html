@@ -11,6 +11,7 @@
         <div class="header-content">
             <h1>Quote System</h1>
             <nav aria-label="Main navigation">
+                <a href="createQuote.html">Create Quote</a>
                 <button id="logout-button" class="link-button" type="button">Log Out</button>
             </nav>
         </div>
@@ -37,7 +38,15 @@
                         <p class="help-text">The customer must already exist in the legacy database.</p>
                     </div>
 
-                    <ul id="customer-index" class="index-list"></ul>
+                    <div class="form-group">
+                        <label for="customer_email">Customer Email</label>
+                        <input
+                            type="text"
+                            id="customer_email"
+                            name="customer_email"
+                            required
+                        >
+                    </div>
 
                     <div class="form-group full-width">
                         <label for="secret_notes">Secret Notes</label>
@@ -63,7 +72,7 @@
                 <div class="actions">
                     <button class="button button-secondary" type="reset">Clear Form</button>
                     <button id="save-button" class="button button-primary" type="submit">
-                        Save Draft Quote
+                        Create Finalized Quote
                     </button>
                 </div>
             </form>
@@ -72,9 +81,14 @@
 
     <template id="line-item-template">
         <div class="line-item">
-            <div class="form-group item-id-group">
-                <label>Item</label>
-                <select class="item-id" required></select>
+            <div class="form-group">
+                <label>Item ID</label>
+                <input class="item-id" type="number" min="1" required>
+            </div>
+
+            <div class="form-group">
+                <label>Price</label>
+                <input class="item-price" type="number" min="0" step="0.01" placeholder="Catalog price if blank">
             </div>
 
             <div class="form-group">
@@ -85,13 +99,9 @@
             <button class="button button-danger remove-item-button" type="button">
                 Remove
             </button>
-
-            <ul class="index-list item-index"></ul>
         </div>
     </template>
 
-    <script src="common.js"></script>
-    <script src="auth.js"></script>
     <script src="createQuote.js"></script>
 </body>
 </html>

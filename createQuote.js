@@ -3,120 +3,40 @@ const lineItemsContainer = document.getElementById('line-items');
 const lineItemTemplate = document.getElementById('line-item-template');
 const addItemButton = document.getElementById('add-item-button');
 const saveButton = document.getElementById('save-button');
-const customerIndex = document.getElementById('customer-index');
-const customerIdInput = document.getElementById('customer_id');
+const logoutButton = document.getElementById('logout-button');
+const messageBox = document.getElementById('message');
+const associateBanner = document.getElementById('associate-banner');
 
-function debounce(fn, delay) {
-    let timeoutId;
-    return (...args) => {
-        clearTimeout(timeoutId);
-        timeoutId = setTimeout(() => fn(...args), delay);
-    };
+const storedAssociate = localStorage.getItem('salesAssociate');
+let associate = null;
+
+try {
+    associate = storedAssociate ? JSON.parse(storedAssociate) : null;
+} catch (error) {
+    localStorage.removeItem('salesAssociate');
 }
 
-function showIndexError(listElement, text) {
-    listElement.innerHTML = `<li>${text}</li>`;
-    listElement.className = 'index-list show error';
+if (!associate || !associate.associate_id) {
+    window.location.href = 'login.html';
+} else {
+    associateBanner.textContent = `Logged in as ${associate.name} (${associate.associate_id})`;
 }
 
-function hideIndex(listElement) {
-    listElement.innerHTML = '';
-    listElement.className = 'index-list';
+function showMessage(text, type = 'error') {
+    messageBox.textContent = text;
+    messageBox.className = `message ${type} show`;
+    messageBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-async function lookupCustomer(customerId, listElement) {
-    if (!Number.isInteger(customerId) || customerId < 1) {
-        hideIndex(listElement);
-        return;
-    }
-
-    try {
-        const response = await fetch(`getCustomer.php?id=${customerId}`);
-        const result = await response.json();
-
-        if (!response.ok || !result.success) {
-            showIndexError(listElement, result.errors?.join(' ') || 'Customer not found.');
-            return;
-        }
-
-        const customer = result.customer;
-        listElement.innerHTML = `
-            <li>Name: ${customer.name}</li>
-            <li>City: ${customer.city}</li>
-            <li>Street: ${customer.street}</li>
-        `;
-        listElement.className = 'index-list show';
-    } catch (error) {
-        showIndexError(listElement, 'Unable to look up customer.');
-    }
+function clearMessage() {
+    messageBox.textContent = '';
+    messageBox.className = 'message';
 }
-
-async function lookupItem(itemId, listElement) {
-    if (!Number.isInteger(itemId) || itemId < 1) {
-        hideIndex(listElement);
-        return;
-    }
-
-    try {
-        const response = await fetch(`getItem.php?id=${itemId}`);
-        const result = await response.json();
-
-        if (!response.ok || !result.success) {
-            showIndexError(listElement, result.errors?.join(' ') || 'Item not found.');
-            return;
-        }
-
-        const item = result.item;
-        listElement.innerHTML = `
-            <li>Description: ${item.description}</li>
-            <li>Price: $${Number(item.price).toFixed(2)}</li>
-        `;
-        listElement.className = 'index-list show';
-    } catch (error) {
-        showIndexError(listElement, 'Unable to look up item.');
-    }
-}
-
-// Item catalog for the "Item" dropdown, loaded once on page load.
-let itemCatalog = [];
-
-async function loadItemCatalog() {
-    try {
-        const response = await fetch('getItems.php');
-        const result = await response.json();
-        itemCatalog = (response.ok && result.success) ? result.items : [];
-    } catch (error) {
-        itemCatalog = [];
-    }
-}
-
-function populateItemSelect(selectElement) {
-    const options = ['<option value="">Select an item</option>'].concat(
-        itemCatalog.map((item) => `<option value="${item.item_id}">${item.description}</option>`)
-    );
-    selectElement.innerHTML = options.join('');
-}
-
-const debouncedCustomerLookup = debounce((value, listElement) => {
-    lookupCustomer(Number(value), listElement);
-}, 400);
-
-customerIdInput.addEventListener('input', () => {
-    debouncedCustomerLookup(customerIdInput.value, customerIndex);
-});
 
 function addLineItem() {
     const fragment = lineItemTemplate.content.cloneNode(true);
     const row = fragment.querySelector('.line-item');
     const removeButton = fragment.querySelector('.remove-item-button');
-    const itemIdSelect = fragment.querySelector('.item-id');
-    const itemIndex = fragment.querySelector('.item-index');
-
-    populateItemSelect(itemIdSelect);
-
-    itemIdSelect.addEventListener('change', () => {
-        lookupItem(Number(itemIdSelect.value), itemIndex);
-    });
 
     removeButton.addEventListener('click', () => {
         if (lineItemsContainer.children.length === 1) {
@@ -140,9 +60,13 @@ quoteForm.addEventListener('reset', () => {
     setTimeout(() => {
         lineItemsContainer.innerHTML = '';
         addLineItem();
-        hideIndex(customerIndex);
         clearMessage();
     }, 0);
+});
+
+logoutButton.addEventListener('click', () => {
+    localStorage.removeItem('salesAssociate');
+    window.location.href = 'login.html';
 });
 
 quoteForm.addEventListener('submit', async (event) => {
@@ -150,17 +74,31 @@ quoteForm.addEventListener('submit', async (event) => {
     clearMessage();
 
     const customerId = Number(document.getElementById('customer_id').value);
+    const customerEmail = document.getElementById('customer_email').value.trim();
     const secretNotes = document.getElementById('secret_notes').value.trim();
     const rows = [...document.querySelectorAll('.line-item')];
 
-    const lineItems = rows.map((row) => ({
-        item_id: Number(row.querySelector('.item-id').value),
-        quantity: Number(row.querySelector('.item-quantity').value)
-    }));
+    const lineItems = rows.map((row) => {
+        const itemId = Number(row.querySelector('.item-id').value);
+        const priceText = row.querySelector('.item-price').value.trim();
+        const quantity = Number(row.querySelector('.item-quantity').value);
+
+        const item = {
+            item_id: itemId,
+            quantity: quantity
+        };
+
+        if (priceText !== '') {
+            item.price = Number(priceText);
+        }
+
+        return item;
+    });
 
     const invalidItem = lineItems.some((item) =>
         !Number.isInteger(item.item_id) || item.item_id < 1 ||
-        !Number.isInteger(item.quantity) || item.quantity < 1
+        !Number.isInteger(item.quantity) || item.quantity < 1 ||
+        (Object.hasOwn(item, 'price') && (!Number.isFinite(item.price) || item.price < 0))
     );
 
     if (!Number.isInteger(customerId) || customerId < 1) {
@@ -169,7 +107,7 @@ quoteForm.addEventListener('submit', async (event) => {
     }
 
     if (invalidItem) {
-        showMessage('Please check the item and quantity for every line item.');
+        showMessage('Please check the item ID, quantity, and price for every line item.');
         return;
     }
 
@@ -184,6 +122,7 @@ quoteForm.addEventListener('submit', async (event) => {
             },
             body: JSON.stringify({
                 customer_id: customerId,
+                customer_email: customerEmail,
                 associate_id: associate.associate_id,
                 secret_notes: secretNotes || null,
                 line_items: lineItems
@@ -197,14 +136,16 @@ quoteForm.addEventListener('submit', async (event) => {
             throw new Error(errorText);
         }
 
-        showMessage(`Quote #${result.quote_id} was created successfully.`, 'success');
         quoteForm.reset();
+        setTimeout(() => {
+            showMessage('Quote created successfully.', 'success');
+        }, 0);
     } catch (error) {
         showMessage(error.message || 'Unable to connect to the server.');
     } finally {
         saveButton.disabled = false;
-        saveButton.textContent = 'Save Draft Quote';
+        saveButton.textContent = 'Create Finalized Quote';
     }
 });
 
-loadItemCatalog().then(addLineItem);
+addLineItem();
