@@ -7,25 +7,22 @@ const discountUnit = document.getElementById('discount-unit');
 const existingSecretNotes = document.getElementById('existing-secret-notes');
 const newSecretNoteInput = document.getElementById('new_secret_note');
 const saveButton = document.getElementById('save-button');
-
-// The quote's secret_notes as of the last load; new notes get appended to this.
-let currentSecretNotes = '';
-
-const discountUnits = { percent: '%', amount: '$' };
-
-function updateDiscountUnit() {
-    discountUnit.textContent = discountUnits[discountTypeSelect.value] || '';
-}
-
-discountTypeSelect.addEventListener('change', updateDiscountUnit);
-
 const lineItemsContainer = document.getElementById('line-items');
 const lineItemTemplate = document.getElementById('line-item-template');
 const addItemButton = document.getElementById('add-item-button');
 
+const DISCOUNT_UNIT_SYMBOLS = { percent: '%', amount: '$' };
+
+// The quote's secret_notes as of the last load; new notes get appended to this.
+let currentSecretNotes = '';
+
 // Tracks whether the loaded quote is already 'ordered', in which case
 // line items and the rest of the form become read-only.
 let quoteIsOrdered = false;
+
+function updateDiscountUnit() {
+    discountUnit.textContent = DISCOUNT_UNIT_SYMBOLS[discountTypeSelect.value] || '';
+}
 
 function showIndexError(listElement, text) {
     listElement.innerHTML = `<li>${text}</li>`;
@@ -128,6 +125,8 @@ function addLineItem(item = null) {
     lineItemsContainer.appendChild(fragment);
 }
 
+discountTypeSelect.addEventListener('change', updateDiscountUnit);
+
 addItemButton.addEventListener('click', () => {
     addLineItem();
     clearMessage();
@@ -180,7 +179,7 @@ editQuoteForm.addEventListener('submit', async (event) => {
     }
 
     if (invalidItem) {
-        showMessage('Please check the item for every line item.');
+        showMessage('Please select an item and a valid quantity for every line item.');
         return;
     }
 
