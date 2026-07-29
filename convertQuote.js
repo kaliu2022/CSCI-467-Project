@@ -2,6 +2,7 @@
 // order once it's sanctioned; shows the resulting PO details.
 const convertQuoteForm = document.getElementById('convert-quote-form');
 const convertHelp = document.getElementById('convert-help');
+const appliedDiscount = document.getElementById('applied-discount');
 const finalDiscountValueInput = document.getElementById('final_discount_value');
 const convertButton = document.getElementById('convert-button');
 
@@ -29,6 +30,14 @@ onQuoteLoaded = (quote) => {
         convertHelp.textContent = 'This quote is sanctioned and ready to convert.';
     } else {
         convertHelp.textContent = 'Converting to a purchase order requires the sanctioned status.';
+    }
+
+    if (quote.discount_type === 'percent') {
+        appliedDiscount.textContent = `Discount applied: ${quote.discount_value}% (already reflected in the Final Amount).`;
+    } else if (quote.discount_type === 'amount') {
+        appliedDiscount.textContent = `Discount applied: ${formatMoney(quote.discount_value)} (already reflected in the Final Amount).`;
+    } else {
+        appliedDiscount.textContent = 'No discount applied.';
     }
 
     if (isOrdered) {

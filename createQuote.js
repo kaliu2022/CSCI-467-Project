@@ -77,6 +77,26 @@ async function lookupItem(itemId, listElement) {
     }
 }
 
+// Item catalog for the "Item" dropdown, loaded once on page load.
+let itemCatalog = [];
+
+async function loadItemCatalog() {
+    try {
+        const response = await fetch('getItems.php');
+        const result = await response.json();
+        itemCatalog = (response.ok && result.success) ? result.items : [];
+    } catch (error) {
+        itemCatalog = [];
+    }
+}
+
+function populateItemSelect(selectElement) {
+    const options = ['<option value="">Select an item</option>'].concat(
+        itemCatalog.map((item) => `<option value="${item.item_id}">${item.description}</option>`)
+    );
+    selectElement.innerHTML = options.join('');
+}
+
 const debouncedCustomerLookup = debounce((value, listElement) => {
     lookupCustomer(Number(value), listElement);
 }, 400);
@@ -89,15 +109,13 @@ function addLineItem() {
     const fragment = lineItemTemplate.content.cloneNode(true);
     const row = fragment.querySelector('.line-item');
     const removeButton = fragment.querySelector('.remove-item-button');
-    const itemIdInput = fragment.querySelector('.item-id');
+    const itemIdSelect = fragment.querySelector('.item-id');
     const itemIndex = fragment.querySelector('.item-index');
 
-    const debouncedItemLookup = debounce((value) => {
-        lookupItem(Number(value), itemIndex);
-    }, 400);
+    populateItemSelect(itemIdSelect);
 
-    itemIdInput.addEventListener('input', () => {
-        debouncedItemLookup(itemIdInput.value);
+    itemIdSelect.addEventListener('change', () => {
+        lookupItem(Number(itemIdSelect.value), itemIndex);
     });
 
     removeButton.addEventListener('click', () => {
@@ -135,27 +153,14 @@ quoteForm.addEventListener('submit', async (event) => {
     const secretNotes = document.getElementById('secret_notes').value.trim();
     const rows = [...document.querySelectorAll('.line-item')];
 
-    const lineItems = rows.map((row) => {
-        const itemId = Number(row.querySelector('.item-id').value);
-        const priceText = row.querySelector('.item-price').value.trim();
-        const quantity = Number(row.querySelector('.item-quantity').value);
-
-        const item = {
-            item_id: itemId,
-            quantity: quantity
-        };
-
-        if (priceText !== '') {
-            item.price = Number(priceText);
-        }
-
-        return item;
-    });
+    const lineItems = rows.map((row) => ({
+        item_id: Number(row.querySelector('.item-id').value),
+        quantity: Number(row.querySelector('.item-quantity').value)
+    }));
 
     const invalidItem = lineItems.some((item) =>
         !Number.isInteger(item.item_id) || item.item_id < 1 ||
-        !Number.isInteger(item.quantity) || item.quantity < 1 ||
-        (Object.hasOwn(item, 'price') && (!Number.isFinite(item.price) || item.price < 0))
+        !Number.isInteger(item.quantity) || item.quantity < 1
     );
 
     if (!Number.isInteger(customerId) || customerId < 1) {
@@ -164,7 +169,7 @@ quoteForm.addEventListener('submit', async (event) => {
     }
 
     if (invalidItem) {
-        showMessage('Please check the item ID, quantity, and price for every line item.');
+        showMessage('Please check the item and quantity for every line item.');
         return;
     }
 
@@ -202,4 +207,4 @@ quoteForm.addEventListener('submit', async (event) => {
     }
 });
 
-addLineItem();
+loadItemCatalog().then(addLineItem);

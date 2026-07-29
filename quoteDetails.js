@@ -32,6 +32,10 @@ function renderQuoteDetails(quote) {
 }
 
 function renderLineItems(lineItems) {
+    if (!detailLineItems) {
+        return;
+    }
+
     detailLineItems.innerHTML = lineItems.map((item) => `
         <li>${item.description} — Qty ${item.quantity} @ ${formatMoney(item.price)}</li>
     `).join('');
@@ -50,7 +54,7 @@ async function loadQuote(quoteId) {
     quoteDetails.hidden = false;
 
     if (typeof onQuoteLoaded === 'function') {
-        onQuoteLoaded(result.quote);
+        onQuoteLoaded(result.quote, result.line_items);
     }
 }
 

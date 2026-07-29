@@ -9,6 +9,7 @@ $discount_type = $data['discount_type'] ?? null;
 $discount_value = $data['discount_value'] ?? 0;
 $secret_notes = $data['secret_notes'] ?? null;
 $status = $data['status'] ?? 'finalized';
+$line_items = $data['line_items'] ?? null;
 
 if (!$quote_id) {
     http_response_code(400);
@@ -16,18 +17,51 @@ if (!$quote_id) {
     exit;
 }
 
+if (!is_array($line_items) || count($line_items) === 0) {
+    http_response_code(400);
+    echo json_encode(['errors' => ['At least one line item is required']]);
+    exit;
+}
+
 $quote = getQuoteOrFail($conn, $quote_id);
 
-$stmt = $conn->prepare('SELECT * FROM quote_line_items WHERE quote_id = ?');
+// Replace the quote's line items with the submitted set, looking up the
+// catalog price for any item that didn't have one supplied. Wrapped in a
+// transaction so a bad item ID can't leave the quote with no line items.
+$conn->begin_transaction();
+
+$stmt = $conn->prepare('DELETE FROM quote_line_items WHERE quote_id = ?');
 $stmt->bind_param('i', $quote_id);
 $stmt->execute();
-$lineItems = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
-// Add up price * quantity across every line item
 $subtotal = 0;
-foreach ($lineItems as $item) {
-    $subtotal += $item['price'] * $item['quantity'];
+foreach ($line_items as $item) {
+    $item_id = $item['item_id'];
+    $quantity = $item['quantity'] ?? 1;
+
+    $stmt = $conn->prepare('SELECT price FROM items WHERE item_id = ?');
+    $stmt->bind_param('i', $item_id);
+    $stmt->execute();
+    $itemResult = $stmt->get_result();
+
+    if ($itemResult->num_rows === 0) {
+        $conn->rollback();
+        http_response_code(400);
+        echo json_encode(['errors' => ["Item id $item_id not found"]]);
+        exit;
+    }
+
+    $itemRow = $itemResult->fetch_assoc();
+    $price = $item['price'] ?? $itemRow['price'];
+
+    $stmt = $conn->prepare('INSERT INTO quote_line_items (quote_id, item_id, price, quantity) VALUES (?, ?, ?, ?)');
+    $stmt->bind_param('iidi', $quote_id, $item_id, $price, $quantity);
+    $stmt->execute();
+
+    $subtotal += $price * $quantity;
 }
+
+$conn->commit();
 
 // Apply the discount on top of the subtotal
 $final_amount = $subtotal;
