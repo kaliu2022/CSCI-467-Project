@@ -46,7 +46,7 @@ onQuoteLoaded = (quote) => {
         poProcessingDate.textContent = quote.processing_date || '—';
         poCommissionRate.textContent = quote.commission_rate !== null ? `${quote.commission_rate}%` : '—';
         poCommissionAmount.textContent = formatMoney(quote.commission_amount);
-        poOrderAmount.textContent = formatMoney(quote.final_amount);
+        poOrderAmount.textContent = formatMoney(quote.final_amount - (quote.final_discount_value || 0));
     } else {
         poResult.hidden = true;
     }

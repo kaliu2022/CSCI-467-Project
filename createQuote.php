@@ -1,9 +1,5 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
-
-header('Content-Type: application/json');
-require 'db.php';
+require 'json_api.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 $customer_id = $data['customer_id'] ?? null;

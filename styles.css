@@ -228,7 +228,7 @@ select:focus {
 
 .line-item {
     display: grid;
-    grid-template-columns: 1.2fr 1fr auto;
+    grid-template-columns: 1.2fr 1fr 1fr auto;
     gap: 12px;
     align-items: end;
     padding: 16px;
@@ -289,6 +289,12 @@ select:focus {
     grid-column: 1;
     grid-row: 2;
     margin: 0;
+}
+
+#customer-index.show {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .associate-banner {

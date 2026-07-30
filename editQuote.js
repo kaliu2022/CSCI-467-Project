@@ -1,5 +1,6 @@
 // Edit Quote: load a quote by ID, edit its line items/discount/notes, and
-// sanction it (Save always sets status to 'sanctioned').
+// either save as a draft (status 'draft') or sanction it (status 'sanctioned'),
+// depending on which submit button triggered the form.
 const editQuoteForm = document.getElementById('edit-quote-form');
 const discountTypeSelect = document.getElementById('discount_type');
 const discountValueInput = document.getElementById('discount_value');
@@ -7,6 +8,7 @@ const discountUnit = document.getElementById('discount-unit');
 const existingSecretNotes = document.getElementById('existing-secret-notes');
 const newSecretNoteInput = document.getElementById('new_secret_note');
 const saveButton = document.getElementById('save-button');
+const saveDraftButton = document.getElementById('save-draft-button');
 const lineItemsContainer = document.getElementById('line-items');
 const lineItemTemplate = document.getElementById('line-item-template');
 const addItemButton = document.getElementById('add-item-button');
@@ -146,6 +148,7 @@ onQuoteLoaded = async (quote, lineItems) => {
     discountValueInput.disabled = quoteIsOrdered;
     newSecretNoteInput.disabled = quoteIsOrdered;
     saveButton.disabled = quoteIsOrdered;
+    saveDraftButton.disabled = quoteIsOrdered;
     addItemButton.disabled = quoteIsOrdered;
 
     await loadItemCatalog();
@@ -188,8 +191,13 @@ editQuoteForm.addEventListener('submit', async (event) => {
         ? (currentSecretNotes ? `${currentSecretNotes}\n\n${newNoteText}` : newNoteText)
         : (currentSecretNotes || null);
 
+    const isDraftSave = event.submitter === saveDraftButton;
+    const targetStatus = isDraftSave ? 'draft' : 'sanctioned';
+
     saveButton.disabled = true;
+    saveDraftButton.disabled = true;
     saveButton.textContent = 'Sanctioning...';
+    saveDraftButton.textContent = 'Saving...';
 
     try {
         const response = await fetch('editQuote.php', {
@@ -202,7 +210,7 @@ editQuoteForm.addEventListener('submit', async (event) => {
                 discount_type: discountTypeSelect.value || null,
                 discount_value: Number(discountValueInput.value) || 0,
                 secret_notes: secretNotes,
-                status: 'sanctioned',
+                status: targetStatus,
                 line_items: lineItems
             })
         });
@@ -218,8 +226,10 @@ editQuoteForm.addEventListener('submit', async (event) => {
     } catch (error) {
         showMessage(error.message || 'Unable to connect to the server.');
     } finally {
-        saveButton.disabled = false;
+        saveButton.disabled = quoteIsOrdered;
+        saveDraftButton.disabled = quoteIsOrdered;
         saveButton.textContent = 'Sanction Quote';
+        saveDraftButton.textContent = 'Save Draft';
     }
 });
 

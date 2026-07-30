@@ -3,40 +3,120 @@ const lineItemsContainer = document.getElementById('line-items');
 const lineItemTemplate = document.getElementById('line-item-template');
 const addItemButton = document.getElementById('add-item-button');
 const saveButton = document.getElementById('save-button');
-const logoutButton = document.getElementById('logout-button');
-const messageBox = document.getElementById('message');
-const associateBanner = document.getElementById('associate-banner');
+const customerIndex = document.getElementById('customer-index');
+const customerIdInput = document.getElementById('customer_id');
 
-const storedAssociate = localStorage.getItem('salesAssociate');
-let associate = null;
-
-try {
-    associate = storedAssociate ? JSON.parse(storedAssociate) : null;
-} catch (error) {
-    localStorage.removeItem('salesAssociate');
+function debounce(fn, delay) {
+    let timeoutId;
+    return (...args) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => fn(...args), delay);
+    };
 }
 
-if (!associate || !associate.associate_id) {
-    window.location.href = 'login.html';
-} else {
-    associateBanner.textContent = `Logged in as ${associate.name} (${associate.associate_id})`;
+function showIndexError(listElement, text) {
+    listElement.innerHTML = `<li>${text}</li>`;
+    listElement.className = 'index-list show error';
 }
 
-function showMessage(text, type = 'error') {
-    messageBox.textContent = text;
-    messageBox.className = `message ${type} show`;
-    messageBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+function hideIndex(listElement) {
+    listElement.innerHTML = '';
+    listElement.className = 'index-list';
 }
 
-function clearMessage() {
-    messageBox.textContent = '';
-    messageBox.className = 'message';
+async function lookupCustomer(customerId, listElement) {
+    if (!Number.isInteger(customerId) || customerId < 1) {
+        hideIndex(listElement);
+        return;
+    }
+
+    try {
+        const response = await fetch(`getCustomer.php?id=${customerId}`);
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            showIndexError(listElement, result.errors?.join(' ') || 'Customer not found.');
+            return;
+        }
+
+        const customer = result.customer;
+        listElement.innerHTML = `
+            <li>Name: ${customer.name}</li>
+            <li>City: ${customer.city}</li>
+            <li>Street: ${customer.street}</li>
+        `;
+        listElement.className = 'index-list show';
+    } catch (error) {
+        showIndexError(listElement, 'Unable to look up customer.');
+    }
 }
+
+async function lookupItem(itemId, listElement) {
+    if (!Number.isInteger(itemId) || itemId < 1) {
+        hideIndex(listElement);
+        return;
+    }
+
+    try {
+        const response = await fetch(`getItem.php?id=${itemId}`);
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            showIndexError(listElement, result.errors?.join(' ') || 'Item not found.');
+            return;
+        }
+
+        const item = result.item;
+        listElement.innerHTML = `
+            <li>Description: ${item.description}</li>
+            <li>Price: $${Number(item.price).toFixed(2)}</li>
+        `;
+        listElement.className = 'index-list show';
+    } catch (error) {
+        showIndexError(listElement, 'Unable to look up item.');
+    }
+}
+
+// Item catalog for the "Item" dropdown, loaded once on page load.
+let itemCatalog = [];
+
+async function loadItemCatalog() {
+    try {
+        const response = await fetch('getItems.php');
+        const result = await response.json();
+        itemCatalog = (response.ok && result.success) ? result.items : [];
+    } catch (error) {
+        itemCatalog = [];
+    }
+}
+
+function populateItemSelect(selectElement) {
+    const options = ['<option value="">Select an item</option>'].concat(
+        itemCatalog.map((item) => `<option value="${item.item_id}">${item.description}</option>`)
+    );
+    selectElement.innerHTML = options.join('');
+}
+
+const debouncedCustomerLookup = debounce((value, listElement) => {
+    lookupCustomer(Number(value), listElement);
+}, 400);
+
+customerIdInput.addEventListener('input', () => {
+    debouncedCustomerLookup(customerIdInput.value, customerIndex);
+});
 
 function addLineItem() {
     const fragment = lineItemTemplate.content.cloneNode(true);
     const row = fragment.querySelector('.line-item');
     const removeButton = fragment.querySelector('.remove-item-button');
+    const itemIdSelect = fragment.querySelector('.item-id');
+    const itemIndex = fragment.querySelector('.item-index');
+
+    populateItemSelect(itemIdSelect);
+
+    itemIdSelect.addEventListener('change', () => {
+        lookupItem(Number(itemIdSelect.value), itemIndex);
+    });
 
     removeButton.addEventListener('click', () => {
         if (lineItemsContainer.children.length === 1) {
@@ -60,13 +140,9 @@ quoteForm.addEventListener('reset', () => {
     setTimeout(() => {
         lineItemsContainer.innerHTML = '';
         addLineItem();
+        hideIndex(customerIndex);
         clearMessage();
     }, 0);
-});
-
-logoutButton.addEventListener('click', () => {
-    localStorage.removeItem('salesAssociate');
-    window.location.href = 'login.html';
 });
 
 quoteForm.addEventListener('submit', async (event) => {
@@ -148,4 +224,4 @@ quoteForm.addEventListener('submit', async (event) => {
     }
 });
 
-addLineItem();
+loadItemCatalog().then(addLineItem);
