@@ -106,16 +106,8 @@ customerIdInput.addEventListener('input', () => {
     debouncedCustomerLookup(customerIdInput.value, customerIndex);
 });
 
-// A blank price override falls back to the item's catalog price, mirroring
-// what the server does when a line item is submitted without a price.
 function getRowPrice(row) {
     const itemId = Number(row.querySelector('.item-id').value);
-    const priceText = row.querySelector('.item-price').value.trim();
-
-    if (priceText !== '') {
-        return Number(priceText);
-    }
-
     const catalogItem = itemCatalog.find((item) => Number(item.item_id) === itemId);
     return catalogItem ? Number(catalogItem.price) : 0;
 }
@@ -136,7 +128,6 @@ function addLineItem() {
     const row = fragment.querySelector('.line-item');
     const removeButton = fragment.querySelector('.remove-item-button');
     const itemIdSelect = fragment.querySelector('.item-id');
-    const itemPriceInput = fragment.querySelector('.item-price');
     const itemQuantityInput = fragment.querySelector('.item-quantity');
     const itemIndex = fragment.querySelector('.item-index');
 
@@ -147,7 +138,6 @@ function addLineItem() {
         updateSubtotal();
     });
 
-    itemPriceInput.addEventListener('input', updateSubtotal);
     itemQuantityInput.addEventListener('input', updateSubtotal);
 
     removeButton.addEventListener('click', () => {
@@ -190,25 +180,17 @@ quoteForm.addEventListener('submit', async (event) => {
 
     const lineItems = rows.map((row) => {
         const itemId = Number(row.querySelector('.item-id').value);
-        const priceText = row.querySelector('.item-price').value.trim();
         const quantity = Number(row.querySelector('.item-quantity').value);
 
-        const item = {
+        return {
             item_id: itemId,
             quantity: quantity
         };
-
-        if (priceText !== '') {
-            item.price = Number(priceText);
-        }
-
-        return item;
     });
 
     const invalidItem = lineItems.some((item) =>
         !Number.isInteger(item.item_id) || item.item_id < 1 ||
-        !Number.isInteger(item.quantity) || item.quantity < 1 ||
-        (Object.hasOwn(item, 'price') && (!Number.isFinite(item.price) || item.price < 0))
+        !Number.isInteger(item.quantity) || item.quantity < 1
     );
 
     if (!Number.isInteger(customerId) || customerId < 1) {
@@ -217,7 +199,7 @@ quoteForm.addEventListener('submit', async (event) => {
     }
 
     if (invalidItem) {
-        showMessage('Please check the item ID, quantity, and price for every line item.');
+        showMessage('Please check the item ID and quantity for every line item.');
         return;
     }
 
