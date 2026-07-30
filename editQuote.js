@@ -12,15 +12,17 @@ const saveDraftButton = document.getElementById('save-draft-button');
 const lineItemsContainer = document.getElementById('line-items');
 const lineItemTemplate = document.getElementById('line-item-template');
 const addItemButton = document.getElementById('add-item-button');
+const subtotalDisplay = document.getElementById('line-items-subtotal');
 
 const DISCOUNT_UNIT_SYMBOLS = { percent: '%', amount: '$' };
 
 // The quote's secret_notes as of the last load; new notes get appended to this.
 let currentSecretNotes = '';
 
-// Tracks whether the loaded quote is already 'ordered', in which case
-// line items and the rest of the form become read-only.
+// Tracks whether the loaded quote is already 'ordered' or 'sanctioned', in
+// which case line items and the rest of the form become read-only.
 let quoteIsOrdered = false;
+let quoteIsSanctioned = false;
 
 function updateDiscountUnit() {
     discountUnit.textContent = DISCOUNT_UNIT_SYMBOLS[discountTypeSelect.value] || '';
@@ -89,6 +91,20 @@ function populateItemSelect(selectElement) {
     selectElement.innerHTML = options.join('');
 }
 
+// Line items here only carry a quantity — price always comes from the item catalog.
+function updateSubtotal() {
+    const rows = [...lineItemsContainer.querySelectorAll('.line-item')];
+    const subtotal = rows.reduce((sum, row) => {
+        const itemId = Number(row.querySelector('.item-id').value);
+        const quantity = Number(row.querySelector('.item-quantity').value);
+        const catalogItem = itemCatalog.find((catalogEntry) => Number(catalogEntry.item_id) === itemId);
+        const price = catalogItem ? Number(catalogItem.price) : 0;
+        return Number.isFinite(quantity) ? sum + price * quantity : sum;
+    }, 0);
+
+    subtotalDisplay.textContent = formatMoney(subtotal);
+}
+
 // Adds a line item row, optionally pre-filled from an existing quote line item.
 function addLineItem(item = null) {
     const fragment = lineItemTemplate.content.cloneNode(true);
@@ -108,7 +124,10 @@ function addLineItem(item = null) {
 
     itemIdSelect.addEventListener('change', () => {
         lookupItem(Number(itemIdSelect.value), itemIndex);
+        updateSubtotal();
     });
+
+    itemQuantityInput.addEventListener('input', updateSubtotal);
 
     removeButton.addEventListener('click', () => {
         if (lineItemsContainer.children.length === 1) {
@@ -118,13 +137,15 @@ function addLineItem(item = null) {
 
         row.remove();
         clearMessage();
+        updateSubtotal();
     });
 
-    itemIdSelect.disabled = quoteIsOrdered;
-    itemQuantityInput.disabled = quoteIsOrdered;
-    removeButton.disabled = quoteIsOrdered;
+    itemIdSelect.disabled = quoteIsOrdered || quoteIsSanctioned;
+    itemQuantityInput.disabled = quoteIsOrdered || quoteIsSanctioned;
+    removeButton.disabled = quoteIsOrdered || quoteIsSanctioned;
 
     lineItemsContainer.appendChild(fragment);
+    updateSubtotal();
 }
 
 discountTypeSelect.addEventListener('change', updateDiscountUnit);
@@ -144,12 +165,13 @@ onQuoteLoaded = async (quote, lineItems) => {
     newSecretNoteInput.value = '';
 
     quoteIsOrdered = quote.status === 'ordered';
-    discountTypeSelect.disabled = quoteIsOrdered;
-    discountValueInput.disabled = quoteIsOrdered;
-    newSecretNoteInput.disabled = quoteIsOrdered;
-    saveButton.disabled = quoteIsOrdered;
-    saveDraftButton.disabled = quoteIsOrdered;
-    addItemButton.disabled = quoteIsOrdered;
+    quoteIsSanctioned = quote.status === 'sanctioned';
+    discountTypeSelect.disabled = quoteIsOrdered || quoteIsSanctioned;
+    discountValueInput.disabled = quoteIsOrdered || quoteIsSanctioned;
+    newSecretNoteInput.disabled = quoteIsOrdered || quoteIsSanctioned;
+    saveButton.disabled = quoteIsOrdered || quoteIsSanctioned;
+    saveDraftButton.disabled = quoteIsOrdered || quoteIsSanctioned;
+    addItemButton.disabled = quoteIsOrdered || quoteIsSanctioned;
 
     await loadItemCatalog();
 
@@ -226,8 +248,8 @@ editQuoteForm.addEventListener('submit', async (event) => {
     } catch (error) {
         showMessage(error.message || 'Unable to connect to the server.');
     } finally {
-        saveButton.disabled = quoteIsOrdered;
-        saveDraftButton.disabled = quoteIsOrdered;
+        saveButton.disabled = quoteIsOrdered || quoteIsSanctioned;
+        saveDraftButton.disabled = quoteIsOrdered || quoteIsSanctioned;
         saveButton.textContent = 'Sanction Quote';
         saveDraftButton.textContent = 'Save Draft';
     }

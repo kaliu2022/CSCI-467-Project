@@ -5,6 +5,7 @@ const addItemButton = document.getElementById('add-item-button');
 const saveButton = document.getElementById('save-button');
 const customerIndex = document.getElementById('customer-index');
 const customerIdInput = document.getElementById('customer_id');
+const subtotalDisplay = document.getElementById('line-items-subtotal');
 
 function debounce(fn, delay) {
     let timeoutId;
@@ -105,18 +106,49 @@ customerIdInput.addEventListener('input', () => {
     debouncedCustomerLookup(customerIdInput.value, customerIndex);
 });
 
+// A blank price override falls back to the item's catalog price, mirroring
+// what the server does when a line item is submitted without a price.
+function getRowPrice(row) {
+    const itemId = Number(row.querySelector('.item-id').value);
+    const priceText = row.querySelector('.item-price').value.trim();
+
+    if (priceText !== '') {
+        return Number(priceText);
+    }
+
+    const catalogItem = itemCatalog.find((item) => Number(item.item_id) === itemId);
+    return catalogItem ? Number(catalogItem.price) : 0;
+}
+
+function updateSubtotal() {
+    const rows = [...lineItemsContainer.querySelectorAll('.line-item')];
+    const subtotal = rows.reduce((sum, row) => {
+        const price = getRowPrice(row);
+        const quantity = Number(row.querySelector('.item-quantity').value);
+        return Number.isFinite(price) && Number.isFinite(quantity) ? sum + price * quantity : sum;
+    }, 0);
+
+    subtotalDisplay.textContent = formatMoney(subtotal);
+}
+
 function addLineItem() {
     const fragment = lineItemTemplate.content.cloneNode(true);
     const row = fragment.querySelector('.line-item');
     const removeButton = fragment.querySelector('.remove-item-button');
     const itemIdSelect = fragment.querySelector('.item-id');
+    const itemPriceInput = fragment.querySelector('.item-price');
+    const itemQuantityInput = fragment.querySelector('.item-quantity');
     const itemIndex = fragment.querySelector('.item-index');
 
     populateItemSelect(itemIdSelect);
 
     itemIdSelect.addEventListener('change', () => {
         lookupItem(Number(itemIdSelect.value), itemIndex);
+        updateSubtotal();
     });
+
+    itemPriceInput.addEventListener('input', updateSubtotal);
+    itemQuantityInput.addEventListener('input', updateSubtotal);
 
     removeButton.addEventListener('click', () => {
         if (lineItemsContainer.children.length === 1) {
@@ -126,9 +158,11 @@ function addLineItem() {
 
         row.remove();
         clearMessage();
+        updateSubtotal();
     });
 
     lineItemsContainer.appendChild(fragment);
+    updateSubtotal();
 }
 
 addItemButton.addEventListener('click', () => {

@@ -237,6 +237,25 @@ select:focus {
     background: #f8fafc;
 }
 
+.subtotal-row {
+    display: flex;
+    justify-content: flex-end;
+    align-items: baseline;
+    gap: 10px;
+    margin: 14px 0 0;
+    padding: 10px 16px;
+    font-size: 1.05rem;
+}
+
+.subtotal-row .subtotal-label {
+    color: #52606d;
+    font-weight: 600;
+}
+
+.subtotal-row .subtotal-amount {
+    font-weight: 700;
+}
+
 .input-with-suffix {
     display: flex;
     align-items: center;
