@@ -214,7 +214,7 @@ quoteForm.addEventListener('submit', async (event) => {
 
         quoteForm.reset();
         setTimeout(() => {
-            showMessage('Quote created successfully.', 'success');
+            showMessage(`Quote #${result.quote_id} created successfully.`, 'success');
         }, 0);
     } catch (error) {
         showMessage(error.message || 'Unable to connect to the server.');
