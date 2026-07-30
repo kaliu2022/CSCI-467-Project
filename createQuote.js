@@ -106,6 +106,10 @@ customerIdInput.addEventListener('input', () => {
     debouncedCustomerLookup(customerIdInput.value, customerIndex);
 });
 
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 function getRowPrice(row) {
     const itemId = Number(row.querySelector('.item-id').value);
     const catalogItem = itemCatalog.find((item) => Number(item.item_id) === itemId);
@@ -195,6 +199,11 @@ quoteForm.addEventListener('submit', async (event) => {
 
     if (!Number.isInteger(customerId) || customerId < 1) {
         showMessage('Please enter a valid customer ID.');
+        return;
+    }
+
+    if (!isValidEmail(customerEmail)) {
+        showMessage('Please enter a valid customer email address.');
         return;
     }
 
