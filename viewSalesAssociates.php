@@ -38,8 +38,7 @@ $associates = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
                 echo "Error deleting record: " . $conn->error . "</br>";
             }
         } else if(($_POST['select'] ?? "") == "Add"){
-            $sql = "INSERT INTO `sales_associates` (`associate_id`, `user_id`, `password`, `name`, `address`, `accumulated_commission`) VALUES (";
-            $sql .= "'".$_POST['associate_id']."', ";
+            $sql = "INSERT INTO `sales_associates` (`user_id`, `password`, `name`, `address`, `accumulated_commission`) VALUES (";
             $sql .= "'".$_POST['user_id']."', ";
             $sql .= "'".$_POST['password']."', ";
             $sql .= "'".$_POST['name']."', ";
@@ -108,11 +107,8 @@ $associates = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         echo '</select>';
         echo '<input type="submit" name="select" value="Delete">';
         echo '</form>';
-
         echo '<h3>Add Sales Associate</h3>';
         echo '<form method="POST">
-        <label>Associate ID:</label>
-        <input type="text" id="associate_id" name="associate_id">
         <label>User ID:</label>
         <input type="text" id="user_id" name="user_id">
         <label>Password:</label>
@@ -125,7 +121,6 @@ $associates = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
         <input type="text" id="accumulated_commission" name="accumulated_commission">';
         echo '<input type="submit" name="select" value="Add">
         </form>';
-
         echo "<h3>Edit Sales Associate<h3>\n";
         echo '<form method="GET" action="editSalesAssociates.php">'; //action="editSalesAssociates.php"
         $result = $conn->query("SELECT DISTINCT associate_id FROM sales_associates ORDER BY associate_id ASC");
