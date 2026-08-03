@@ -1,7 +1,7 @@
 <?php
 // Edit Sales Associate endpoint: updates an existing associate's account
 // details and/or accumulated commission.
-require 'json_api.php';
+require __DIR__ . '/../includes/json_api.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 $associate_id = trim($data['associate_id'] ?? '');

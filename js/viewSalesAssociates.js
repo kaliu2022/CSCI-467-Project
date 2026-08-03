@@ -79,7 +79,7 @@ function renderAssociates(associates) {
 }
 
 async function loadAssociates() {
-    const response = await fetch('viewSalesAssociates.php');
+    const response = await fetch('../api/viewSalesAssociates.php');
     const result = await response.json();
 
     if (!response.ok || !result.success) {
@@ -115,7 +115,7 @@ associatesBody.addEventListener('click', async (event) => {
         deleteTarget.disabled = true;
 
         try {
-            const response = await fetch('deleteAssociate.php', {
+            const response = await fetch('../api/deleteAssociate.php', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ associate_id: associate.associate_id })
@@ -162,7 +162,7 @@ associateForm.addEventListener('submit', async (event) => {
         payload.associate_id = editingAssociateId;
     }
 
-    const endpoint = isEdit ? 'editAssociate.php' : 'createAssociate.php';
+    const endpoint = isEdit ? '../api/editAssociate.php' : '../api/createAssociate.php';
 
     saveButton.disabled = true;
     saveButton.textContent = isEdit ? 'Saving...' : 'Adding...';

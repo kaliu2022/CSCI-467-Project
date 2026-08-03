@@ -42,7 +42,7 @@ function renderLineItems(lineItems) {
 }
 
 async function loadQuote(quoteId) {
-    const response = await fetch(`getQuote.php?id=${quoteId}`);
+    const response = await fetch(`../api/getQuote.php?id=${quoteId}`);
     const result = await response.json();
 
     if (!response.ok || !result.success) {
@@ -84,8 +84,8 @@ loadQuoteForm.addEventListener('submit', (event) => {
     performLoad(Number(lookupQuoteIdInput.value));
 });
 
-// Pages reached from a search result link (e.g. editQuote.html?quote_id=12)
-// pre-fill the lookup field and load the quote right away.
+// Deep-link support: opening the page with ?quote_id=12 pre-fills the
+// lookup field and loads the quote right away.
 const quoteIdFromUrl = Number(new URLSearchParams(window.location.search).get('quote_id'));
 if (Number.isInteger(quoteIdFromUrl) && quoteIdFromUrl > 0) {
     lookupQuoteIdInput.value = quoteIdFromUrl;

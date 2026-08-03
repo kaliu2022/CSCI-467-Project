@@ -1,7 +1,7 @@
 <?php
 // Search Quotes endpoint: returns quotes matching an optional set of
 // filters. All filters are optional and only applied when present.
-require 'json_api.php';
+require __DIR__ . '/../includes/json_api.php';
 
 $status = $_GET['status'] ?? null;
 $associate_id = $_GET['associate_id'] ?? null;

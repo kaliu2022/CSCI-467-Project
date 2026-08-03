@@ -30,7 +30,7 @@ async function lookupCustomer(customerId, listElement) {
     }
 
     try {
-        const response = await fetch(`getCustomer.php?id=${customerId}`);
+        const response = await fetch(`../api/getCustomer.php?id=${customerId}`);
         const result = await response.json();
 
         if (!response.ok || !result.success) {
@@ -97,7 +97,7 @@ async function runSearch() {
     if (dateTo) params.set('date_to', dateTo);
 
     try {
-        const response = await fetch(`searchQuotes.php?${params.toString()}`);
+        const response = await fetch(`../api/searchQuotes.php?${params.toString()}`);
         const result = await response.json();
 
         if (!response.ok || !result.success) {

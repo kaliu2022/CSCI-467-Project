@@ -1,5 +1,5 @@
 <?php
-require 'json_api.php';
+require __DIR__ . '/../includes/json_api.php';
 
 $stmt = $conn->prepare('SELECT item_id, description, price FROM items ORDER BY description');
 $stmt->execute();

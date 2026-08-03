@@ -2,7 +2,7 @@
 // Delete Sales Associate endpoint: removes an associate account, unless
 // they still have quotes on file (blocked by the quotes.associate_id
 // foreign key).
-require 'json_api.php';
+require __DIR__ . '/../includes/json_api.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 $associate_id = trim($data['associate_id'] ?? '');

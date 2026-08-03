@@ -2,7 +2,7 @@
 // Create Sales Associate endpoint: adds a new associate account.
 // associate_id isn't supplied by the caller - it's generated here in the
 // same "RE-######" format as the existing associates.
-require 'json_api.php';
+require __DIR__ . '/../includes/json_api.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 $user_id = trim($data['user_id'] ?? '');

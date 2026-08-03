@@ -1,5 +1,5 @@
 <?php
-require 'json_api.php';
+require __DIR__ . '/../includes/json_api.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 $customer_id = $data['customer_id'] ?? null;

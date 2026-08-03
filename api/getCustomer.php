@@ -1,5 +1,5 @@
 <?php
-require 'json_api.php';
+require __DIR__ . '/../includes/json_api.php';
 
 $customer_id = $_GET['id'] ?? null;
 

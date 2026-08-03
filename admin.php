@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard | Quote System</title>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <header class="site-header">
@@ -22,7 +22,7 @@
             </div>
             <p class="help-text">Search and filter quotes by status, associate, customer, or date.</p>
             <div class="actions">
-                <a class="button button-primary" href="searchQuotes.html">View Quotes</a>
+                <a class="button button-primary" href="pages/searchQuotes.html">View Quotes</a>
             </div>
 
             <div class="section-heading">
@@ -30,7 +30,7 @@
             </div>
             <p class="help-text">View, add, edit, or remove sales associate accounts.</p>
             <div class="actions">
-                <a class="button button-primary" href="viewSalesAssociates.html">Sales Associates</a>
+                <a class="button button-primary" href="pages/viewSalesAssociates.html">Sales Associates</a>
             </div>
         </section>
     </main>

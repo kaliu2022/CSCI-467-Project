@@ -11,12 +11,12 @@ try {
 }
 
 if (!associate || !associate.associate_id) {
-    window.location.href = 'login.html';
+    window.location.href = '../login.html';
 } else {
     associateBanner.textContent = `Logged in as ${associate.name} (${associate.associate_id})`;
 }
 
 logoutButton.addEventListener('click', () => {
     localStorage.removeItem('salesAssociate');
-    window.location.href = 'login.html';
+    window.location.href = '../login.html';
 });

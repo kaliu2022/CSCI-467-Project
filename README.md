@@ -29,11 +29,11 @@ approved, and convert them into purchase orders. Built with PHP
 ## Pages
 
 - **Sales associates** — start at `login.html`. Logging in redirects to
-  `createQuote.html`, from which you can navigate to Edit Quote
-  (`editQuote.html`) and Process Orders (`convertQuote.html`).
+  `pages/createQuote.html`, from which you can navigate to Edit Quote
+  (`pages/editQuote.html`) and Process Orders (`pages/convertQuote.html`).
 - **Admins** — go directly to `admin.php` (no login required). It links to
-  Search Quotes (`searchQuotes.html`) and Sales Associates
-  (`viewSalesAssociates.html`).
+  Search Quotes (`pages/searchQuotes.html`) and Sales Associates
+  (`pages/viewSalesAssociates.html`).
 
 ## Quote lifecycle
 
@@ -56,19 +56,50 @@ draft ──> finalized ──> sanctioned ──> ordered
 
 ## Project structure
 
+`login.html` and `admin.php` are the two entry points and stay at the
+project root so their URLs never change; everything else is grouped by
+type into subfolders. Every page's `fetch()` call and `<script>`/`<link>`
+tag points across these folders with relative paths (e.g. a page in
+`pages/` reaches its endpoint via `../api/...`).
+
+```
+csci467/
+├── login.html              (entry point - sales associate login)
+├── admin.php                (entry point - admin dashboard)
+├── css/
+│   └── styles.css
+├── js/
+│   ├── common.js, auth.js, quoteDetails.js   (shared)
+│   └── login.js, createQuote.js, editQuote.js, convertQuote.js,
+│       searchQuotes.js, viewSalesAssociates.js   (one per page)
+├── pages/
+│   ├── createQuote.html, editQuote.html, convertQuote.html
+│   └── searchQuotes.html, viewSalesAssociates.html
+├── api/
+│   ├── login.php, createQuote.php, editQuote.php, convertQuote.php
+│   ├── searchQuotes.php, viewSalesAssociates.php
+│   ├── createAssociate.php, editAssociate.php, deleteAssociate.php
+│   └── getQuote.php, getCustomer.php, getItem.php, getItems.php
+├── includes/
+│   ├── db.php
+│   └── json_api.php
+├── SQL/
+└── README.md
+```
+
 | File(s) | Purpose |
 |---|---|
-| `login.html`, `login.js`, `login.php` | Sales associate authentication |
-| `createQuote.html`, `createQuote.js`, `createQuote.php` | Create a new quote |
-| `editQuote.html`, `editQuote.js`, `editQuote.php` | Edit line items/discount, save draft or sanction |
-| `convertQuote.html`, `convertQuote.js`, `convertQuote.php` | Convert a sanctioned quote into a purchase order |
-| `quoteDetails.js` | Shared quote-loading/rendering logic for Edit Quote and Process Orders; also auto-loads a quote when the page is opened with `?quote_id=` |
-| `getQuote.php`, `getCustomer.php`, `getItem.php`, `getItems.php` | Read-only lookup endpoints |
+| `login.html`, `js/login.js`, `api/login.php` | Sales associate authentication |
+| `pages/createQuote.html`, `js/createQuote.js`, `api/createQuote.php` | Create a new quote |
+| `pages/editQuote.html`, `js/editQuote.js`, `api/editQuote.php` | Edit line items/discount, save draft or sanction |
+| `pages/convertQuote.html`, `js/convertQuote.js`, `api/convertQuote.php` | Convert a sanctioned quote into a purchase order |
+| `js/quoteDetails.js` | Shared quote-loading/rendering logic for Edit Quote and Process Orders; also auto-loads a quote when the page is opened with `?quote_id=` |
+| `api/getQuote.php`, `api/getCustomer.php`, `api/getItem.php`, `api/getItems.php` | Read-only lookup endpoints |
 | `admin.php` | Admin dashboard (no login required) linking to Search Quotes and Sales Associates |
-| `searchQuotes.html`, `searchQuotes.js`, `searchQuotes.php` | Read-only filter/search of quotes by status, associate, customer, or date |
-| `viewSalesAssociates.html`, `viewSalesAssociates.js`, `viewSalesAssociates.php` | List sales associates, including their password |
-| `createAssociate.php`, `editAssociate.php`, `deleteAssociate.php` | Add, update, or remove a sales associate; `createAssociate.php` generates the `RE-######` associate ID |
-| `db.php` | mysqli connection setup |
-| `json_api.php` | Shared bootstrap (JSON headers, error handling, `getQuoteOrFail`) for the JSON endpoints |
-| `common.js`, `auth.js`, `styles.css` | Shared frontend helpers and styling |
+| `pages/searchQuotes.html`, `js/searchQuotes.js`, `api/searchQuotes.php` | Read-only filter/search of quotes by status, associate, customer, or date |
+| `pages/viewSalesAssociates.html`, `js/viewSalesAssociates.js`, `api/viewSalesAssociates.php` | List sales associates, including their password |
+| `api/createAssociate.php`, `api/editAssociate.php`, `api/deleteAssociate.php` | Add, update, or remove a sales associate; `createAssociate.php` generates the `RE-######` associate ID |
+| `includes/db.php` | mysqli connection setup |
+| `includes/json_api.php` | Shared bootstrap (JSON headers, error handling, `getQuoteOrFail`) for the JSON endpoints |
+| `js/common.js`, `js/auth.js`, `css/styles.css` | Shared frontend helpers and styling |
 | `SQL/` | Table definitions and seed data |

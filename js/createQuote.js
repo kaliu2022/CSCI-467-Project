@@ -32,7 +32,7 @@ async function lookupCustomer(customerId, listElement) {
     }
 
     try {
-        const response = await fetch(`getCustomer.php?id=${customerId}`);
+        const response = await fetch(`../api/getCustomer.php?id=${customerId}`);
         const result = await response.json();
 
         if (!response.ok || !result.success) {
@@ -59,7 +59,7 @@ async function lookupItem(itemId, listElement) {
     }
 
     try {
-        const response = await fetch(`getItem.php?id=${itemId}`);
+        const response = await fetch(`../api/getItem.php?id=${itemId}`);
         const result = await response.json();
 
         if (!response.ok || !result.success) {
@@ -83,7 +83,7 @@ let itemCatalog = [];
 
 async function loadItemCatalog() {
     try {
-        const response = await fetch('getItems.php');
+        const response = await fetch('../api/getItems.php');
         const result = await response.json();
         itemCatalog = (response.ok && result.success) ? result.items : [];
     } catch (error) {
@@ -216,7 +216,7 @@ quoteForm.addEventListener('submit', async (event) => {
     saveButton.textContent = 'Saving...';
 
     try {
-        const response = await fetch('createQuote.php', {
+        const response = await fetch('../api/createQuote.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

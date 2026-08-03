@@ -23,7 +23,7 @@ loginForm.addEventListener('submit', async (event) => {
     messageBox.className = 'message';
 
     try {
-        const response = await fetch('login.php', {
+        const response = await fetch('api/login.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -42,7 +42,7 @@ loginForm.addEventListener('submit', async (event) => {
         }
 
         localStorage.setItem('salesAssociate', JSON.stringify(result.associate));
-        window.location.href = 'createQuote.html';
+        window.location.href = 'pages/createQuote.html';
     } catch (error) {
         showMessage(error.message || 'Unable to connect to the server.');
     } finally {
