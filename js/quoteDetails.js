@@ -42,7 +42,7 @@ function renderLineItems(lineItems) {
 }
 
 async function loadQuote(quoteId) {
-    const response = await fetch(`../api/getQuote.php?id=${quoteId}`);
+    const response = await fetch(`../../api/getQuote.php?id=${quoteId}`);
     const result = await response.json();
 
     if (!response.ok || !result.success) {

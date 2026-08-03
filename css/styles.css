@@ -57,6 +57,11 @@ body {
     text-decoration: underline;
 }
 
+.site-header nav a.active {
+    font-weight: 700;
+    text-decoration: underline;
+}
+
 .page-shell {
     width: min(1000px, 92%);
     margin: 40px auto;

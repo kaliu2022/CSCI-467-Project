@@ -9,7 +9,7 @@
 <body>
     <header class="site-header">
         <div class="header-content">
-            <h1>Quote System</h1>
+            <h1>Quote System: Administrator</h1>
         </div>
     </header>
 

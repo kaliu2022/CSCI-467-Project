@@ -45,7 +45,7 @@ async function lookupItem(itemId, listElement) {
     }
 
     try {
-        const response = await fetch(`../api/getItem.php?id=${itemId}`);
+        const response = await fetch(`../../api/getItem.php?id=${itemId}`);
         const result = await response.json();
 
         if (!response.ok || !result.success) {
@@ -71,7 +71,7 @@ let itemCatalogPromise = null;
 
 function loadItemCatalog() {
     if (!itemCatalogPromise) {
-        itemCatalogPromise = fetch('../api/getItems.php')
+        itemCatalogPromise = fetch('../../api/getItems.php')
             .then((response) => response.json())
             .then((result) => {
                 itemCatalog = result.success ? result.items : [];
@@ -222,7 +222,7 @@ editQuoteForm.addEventListener('submit', async (event) => {
     saveDraftButton.textContent = 'Saving...';
 
     try {
-        const response = await fetch('../api/editQuote.php', {
+        const response = await fetch('../../api/editQuote.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

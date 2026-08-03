@@ -29,8 +29,10 @@ approved, and convert them into purchase orders. Built with PHP
 ## Pages
 
 - **Sales associates** — start at `login.html`. Logging in redirects to
-  `pages/createQuote.html`, from which you can navigate to Edit Quote
-  (`pages/editQuote.html`) and Process Orders (`pages/convertQuote.html`).
+  `pages/createQuote.html`.
+- **Headquarters** — go directly to `pages/headquarters/editQuote.html` or
+  `pages/headquarters/convertQuote.html` (no login required). The two
+  share a nav bar (Edit Quote / Process Orders) for switching between them.
 - **Admins** — go directly to `admin.php` (no login required). It links to
   Search Quotes (`pages/searchQuotes.html`) and Sales Associates
   (`pages/viewSalesAssociates.html`).
@@ -56,11 +58,14 @@ draft ──> finalized ──> sanctioned ──> ordered
 
 ## Project structure
 
-`login.html` and `admin.php` are the two entry points and stay at the
-project root so their URLs never change; everything else is grouped by
-type into subfolders. Every page's `fetch()` call and `<script>`/`<link>`
-tag points across these folders with relative paths (e.g. a page in
-`pages/` reaches its endpoint via `../api/...`).
+`login.html` and `admin.php` stay at the project root so their URLs never
+change. The Headquarters pages live in their own `pages/headquarters/`
+folder, since they're a separate, directly-accessed area rather than
+something reached by clicking through from another page. Everything else
+is grouped by type into subfolders. Every page's `fetch()` call and
+`<script>`/`<link>` tag points across these folders with relative paths —
+`pages/headquarters/` is one level deeper than `pages/`, so it reaches
+shared assets via `../../css/...`, `../../js/...`, `../../api/...`.
 
 ```
 csci467/
@@ -73,8 +78,11 @@ csci467/
 │   └── login.js, createQuote.js, editQuote.js, convertQuote.js,
 │       searchQuotes.js, viewSalesAssociates.js   (one per page)
 ├── pages/
-│   ├── createQuote.html, editQuote.html, convertQuote.html
-│   └── searchQuotes.html, viewSalesAssociates.html
+│   ├── createQuote.html
+│   ├── searchQuotes.html, viewSalesAssociates.html
+│   └── headquarters/
+│       ├── editQuote.html       (entry point - edit quote)
+│       └── convertQuote.html    (entry point - process orders)
 ├── api/
 │   ├── login.php, createQuote.php, editQuote.php, convertQuote.php
 │   ├── searchQuotes.php, viewSalesAssociates.php
@@ -91,8 +99,8 @@ csci467/
 |---|---|
 | `login.html`, `js/login.js`, `api/login.php` | Sales associate authentication |
 | `pages/createQuote.html`, `js/createQuote.js`, `api/createQuote.php` | Create a new quote |
-| `pages/editQuote.html`, `js/editQuote.js`, `api/editQuote.php` | Edit line items/discount, save draft or sanction |
-| `pages/convertQuote.html`, `js/convertQuote.js`, `api/convertQuote.php` | Convert a sanctioned quote into a purchase order |
+| `pages/headquarters/editQuote.html`, `js/editQuote.js`, `api/editQuote.php` | Edit line items/discount, save draft or sanction |
+| `pages/headquarters/convertQuote.html`, `js/convertQuote.js`, `api/convertQuote.php` | Convert a sanctioned quote into a purchase order |
 | `js/quoteDetails.js` | Shared quote-loading/rendering logic for Edit Quote and Process Orders; also auto-loads a quote when the page is opened with `?quote_id=` |
 | `api/getQuote.php`, `api/getCustomer.php`, `api/getItem.php`, `api/getItems.php` | Read-only lookup endpoints |
 | `admin.php` | Admin dashboard (no login required) linking to Search Quotes and Sales Associates |

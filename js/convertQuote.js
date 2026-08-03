@@ -69,7 +69,7 @@ convertQuoteForm.addEventListener('submit', async (event) => {
     convertButton.textContent = 'Converting...';
 
     try {
-        const response = await fetch('../api/convertQuote.php', {
+        const response = await fetch('../../api/convertQuote.php', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
