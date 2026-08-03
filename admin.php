@@ -1,25 +1,38 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Admin page</title>
-    <!--<link rel="stylesheet" href="../style.css">-->
-    <style>
-      table, th, td {
-        border: 1px solid black;
-        border-collapse: collapse;
-      }
-    </style>
-  </head>
-  <body>
-    <h1>Admin Page</h1>
-    <h3>View Quotes:</h3>
-    <form action="searchQuotes.php">
-        <input type="submit" value="Quotes">
-    </form>
-    <h3>Manage Sales Associates:</h3>
-    <form action="viewSalesAssociates.php">
-        <input type="submit" value="Sales Associates">
-    </form>
-  </body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Quote System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-content">
+            <h1>Quote System</h1>
+        </div>
+    </header>
+
+    <main class="page-shell">
+        <section class="card" aria-labelledby="admin-title">
+            <h1 id="admin-title">Admin Dashboard</h1>
+
+            <div class="section-heading">
+                <h2>Quotes</h2>
+            </div>
+            <p class="help-text">Search and filter quotes by status, associate, customer, or date.</p>
+            <div class="actions">
+                <a class="button button-primary" href="searchQuotes.html">View Quotes</a>
+            </div>
+
+            <div class="section-heading">
+                <h2>Sales Associates</h2>
+            </div>
+            <p class="help-text">View, add, edit, or remove sales associate accounts.</p>
+            <div class="actions">
+                <a class="button button-primary" href="viewSalesAssociates.html">Sales Associates</a>
+            </div>
+        </section>
+    </main>
+</body>
 </html>

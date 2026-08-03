@@ -2,6 +2,12 @@
     box-sizing: border-box;
 }
 
+/* The [hidden] attribute must always win, regardless of what display
+   value a component's own class sets (e.g. .button, .form-group). */
+[hidden] {
+    display: none !important;
+}
+
 body {
     margin: 0;
     font-family: Arial, Helvetica, sans-serif;
@@ -141,11 +147,14 @@ select:focus {
 }
 
 .button {
+    display: inline-block;
     border: none;
     border-radius: 6px;
     padding: 11px 18px;
     font: inherit;
     font-weight: 700;
+    text-decoration: none;
+    text-align: center;
     cursor: pointer;
 }
 
@@ -383,6 +392,66 @@ select:focus {
     padding-top: 10px;
     border-top: 1px solid #d9e2ec;
 }
+
+.table-wrapper {
+    overflow-x: auto;
+    margin: 0 0 20px;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table th,
+.data-table td {
+    padding: 10px 12px;
+    text-align: left;
+    border-bottom: 1px solid #d9e2ec;
+    white-space: nowrap;
+}
+
+.data-table th {
+    background: #f8fafc;
+    color: #52606d;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.data-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+.row-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.button-small {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+}
+
+.empty-state {
+    color: #627d98;
+    padding: 12px 0;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    white-space: nowrap;
+}
+
+.status-draft { background: #e4e7eb; color: #243b53; }
+.status-finalized { background: #eaf4ff; color: #1a5faa; }
+.status-sanctioned { background: #fff6e0; color: #9a6b00; }
+.status-ordered { background: #effcf6; color: #146b45; }
 
 @media (max-width: 760px) {
     .header-content,

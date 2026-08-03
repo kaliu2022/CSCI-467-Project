@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Quotes | Quote System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-content">
+            <h1>Quote System</h1>
+            <nav aria-label="Main navigation">
+                <a href="admin.php">Admin</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page-shell">
+        <section class="card" aria-labelledby="search-quotes-title">
+            <h1 id="search-quotes-title">Search Quotes</h1>
+
+            <div id="message" class="message" role="alert" aria-live="polite"></div>
+
+            <form id="search-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <select id="status" name="status">
+                            <option value="">All statuses</option>
+                            <option value="draft">Draft</option>
+                            <option value="finalized">Finalized</option>
+                            <option value="sanctioned">Sanctioned</option>
+                            <option value="ordered">Ordered</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="associate_id">Associate ID</label>
+                        <input type="text" id="associate_id" name="associate_id">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="customer_id">Customer ID</label>
+                        <input type="number" id="customer_id" name="customer_id" min="1">
+                        <ul id="customer-index" class="index-list"></ul>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date_from">Created From</label>
+                        <input type="date" id="date_from" name="date_from">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="date_to">Created To</label>
+                        <input type="date" id="date_to" name="date_to">
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button class="button button-secondary" type="reset">Clear Filters</button>
+                    <button id="search-button" class="button button-primary" type="submit">Search</button>
+                </div>
+            </form>
+
+            <div class="section-heading">
+                <h2>Results</h2>
+                <span id="results-count" class="help-text"></span>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Quote ID</th>
+                            <th>Customer ID</th>
+                            <th>Associate</th>
+                            <th>Status</th>
+                            <th>Created</th>
+                            <th>Final Amount</th>
+                            <th>PO Number</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-body"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <script src="common.js"></script>
+    <script src="searchQuotes.js"></script>
+</body>
+</html>

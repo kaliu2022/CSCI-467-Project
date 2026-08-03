@@ -58,11 +58,7 @@ async function loadQuote(quoteId) {
     }
 }
 
-loadQuoteForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    clearMessage();
-
-    const quoteId = Number(lookupQuoteIdInput.value);
+async function performLoad(quoteId) {
     if (!Number.isInteger(quoteId) || quoteId < 1) {
         showMessage('Please enter a valid quote ID.');
         return;
@@ -80,4 +76,18 @@ loadQuoteForm.addEventListener('submit', async (event) => {
         loadButton.disabled = false;
         loadButton.textContent = 'Load Quote';
     }
+}
+
+loadQuoteForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    clearMessage();
+    performLoad(Number(lookupQuoteIdInput.value));
 });
+
+// Pages reached from a search result link (e.g. editQuote.html?quote_id=12)
+// pre-fill the lookup field and load the quote right away.
+const quoteIdFromUrl = Number(new URLSearchParams(window.location.search).get('quote_id'));
+if (Number.isInteger(quoteIdFromUrl) && quoteIdFromUrl > 0) {
+    lookupQuoteIdInput.value = quoteIdFromUrl;
+    performLoad(quoteIdFromUrl);
+}

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Associates | Quote System</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-content">
+            <h1>Quote System</h1>
+            <nav aria-label="Main navigation">
+                <a href="admin.php">Admin</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="page-shell">
+        <section class="card" aria-labelledby="associates-title">
+            <h1 id="associates-title">Sales Associates</h1>
+
+            <div id="message" class="message" role="alert" aria-live="polite"></div>
+
+            <div class="section-heading">
+                <h2>All Associates</h2>
+            </div>
+
+            <div class="table-wrapper">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User ID</th>
+                            <th>Password</th>
+                            <th>Name</th>
+                            <th>Address</th>
+                            <th>Commission</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="associates-body"></tbody>
+                </table>
+            </div>
+
+            <div class="section-heading">
+                <h2 id="form-heading">Add Sales Associate</h2>
+            </div>
+
+            <form id="associate-form">
+                <div class="form-grid">
+                    <div class="form-group" id="associate-id-group" hidden>
+                        <label for="associate_id">Associate ID</label>
+                        <input type="text" id="associate_id" name="associate_id" readonly>
+                        <p class="help-text">Assigned automatically when the associate was created.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="user_id">User ID</label>
+                        <input type="text" id="user_id" name="user_id" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" autocomplete="new-password" required>
+                        <p id="password-help" class="help-text">Required when adding a new associate.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address">Address</label>
+                        <input type="text" id="address" name="address">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="accumulated_commission">Accumulated Commission</label>
+                        <input type="number" id="accumulated_commission" name="accumulated_commission" min="0" step="0.01" value="0">
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button id="cancel-edit-button" class="button button-secondary" type="button" hidden>Cancel</button>
+                    <button id="save-associate-button" class="button button-primary" type="submit">Add Associate</button>
+                </div>
+            </form>
+        </section>
+    </main>
+
+    <script src="common.js"></script>
+    <script src="viewSalesAssociates.js"></script>
+</body>
+</html>
