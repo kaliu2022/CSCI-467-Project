@@ -57,6 +57,17 @@ customerIdInput.addEventListener('input', () => {
     debouncedCustomerLookup(customerIdInput.value, customerIndex);
 });
 
+// The stored final_amount doesn't include any additional discount applied
+// at conversion time (final_discount_value) - the true final amount is
+// the same "Order Amount" shown on the Process Orders page.
+function getDisplayFinalAmount(quote) {
+    if (quote.final_amount === null || quote.final_amount === undefined) {
+        return null;
+    }
+
+    return Number(quote.final_amount) - Number(quote.final_discount_value || 0);
+}
+
 function renderResults(quotes) {
     resultsCount.textContent = quotes.length === 1 ? '1 quote' : `${quotes.length} quotes`;
 
@@ -72,7 +83,7 @@ function renderResults(quotes) {
             <td>${quote.associate_id}</td>
             <td><span class="status-badge status-${quote.status}">${quote.status}</span></td>
             <td>${quote.created_date}</td>
-            <td>${formatMoney(quote.final_amount)}</td>
+            <td>${formatMoney(getDisplayFinalAmount(quote))}</td>
             <td>${quote.po_number || '—'}</td>
         </tr>
     `).join('');

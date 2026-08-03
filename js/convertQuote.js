@@ -15,14 +15,32 @@ const poOrderAmount = document.getElementById('po-order-amount');
 
 let currentQuoteStatus = null;
 
+// The quote's stored final_amount, before any additional discount typed
+// into this form is applied - used to live-preview that discount below.
+let currentFinalAmount = null;
+
+function updateFinalAmountPreview() {
+    if (currentFinalAmount === null) {
+        return;
+    }
+
+    const additionalDiscount = Number(finalDiscountValueInput.value) || 0;
+    detailFinalAmount.textContent = formatMoney(currentFinalAmount - additionalDiscount);
+}
+
+finalDiscountValueInput.addEventListener('input', updateFinalAmountPreview);
+
 onQuoteLoaded = (quote) => {
     currentQuoteStatus = quote.status;
+    currentFinalAmount = Number(quote.final_amount) || 0;
 
     const isOrdered = quote.status === 'ordered';
     const isSanctioned = quote.status === 'sanctioned';
 
     convertButton.disabled = !isSanctioned;
     finalDiscountValueInput.disabled = !isSanctioned;
+    finalDiscountValueInput.value = quote.final_discount_value || 0;
+    updateFinalAmountPreview();
 
     if (isOrdered) {
         convertHelp.textContent = 'This quote has already been converted to a purchase order.';

@@ -4,6 +4,46 @@ A PHP/MySQL web app for sales associates to create customer quotes, get them
 approved, and convert them into purchase orders. Built with PHP
 (mysqli), JS/HTML/CSS on the frontend.
 
+## Running the site
+
+**Prerequisites:** XAMPP (or standalone Apache + MySQL/MariaDB) with
+**PHP 8.1+** — the API endpoints rely on mysqli throwing
+`mysqli_sql_exception` on errors, which is PHP's default behavior since 8.1.
+
+1. **Place the project in `htdocs`.** Copy/clone this folder into your
+   XAMPP install so it's reachable as `http://localhost/csci467/`, e.g.
+   `C:\xampp\htdocs\csci467`.
+
+2. **Start Apache and MySQL** from the XAMPP Control Panel.
+
+3. **Create the database and import the seed data.** Create a database
+   named `csci_467`, then import the files in `SQL/` **in this order**
+   (later ones have foreign keys into earlier ones):
+   ```
+   sales_associates.sql → customers.sql → items.sql → quotes.sql → quote_line_items.sql
+   ```
+   Either import each file through phpMyAdmin's Import tab, or from a
+   terminal:
+   ```
+   mysql -u root -e "CREATE DATABASE IF NOT EXISTS csci_467"
+   mysql -u root csci_467 < SQL/sales_associates.sql
+   mysql -u root csci_467 < SQL/customers.sql
+   mysql -u root csci_467 < SQL/items.sql
+   mysql -u root csci_467 < SQL/quotes.sql
+   mysql -u root csci_467 < SQL/quote_line_items.sql
+   ```
+
+4. **Check the DB credentials in `includes/db.php`.** They default to
+   `root` with no password on `localhost`, which matches a stock XAMPP
+   install — only change this if your MySQL is configured differently.
+
+5. **Open it in a browser:**
+   - Sales associate: `http://localhost/csci467/login.html` — try
+     `mjones` / `pass123` from the seed data (see `SQL/sales_associates.sql`
+     for the other accounts).
+   - Admin (no login): `http://localhost/csci467/admin.php`
+   - Headquarters (no login): `http://localhost/csci467/pages/headquarters/editQuote.html`
+
 ## Features
 
 - **Sales associate login** — associates sign in with a user ID and
